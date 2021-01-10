@@ -7,9 +7,9 @@
   "description": {
     "name": "RecoverHosting",
     "tagline": "wholesale domain reseller registrar.",
-    "long": "## Apply for an account\nWHMCS users get exclusive access to signup with no setup fees.\n[Click here to create an account](https://www.recoverhosting.com/domain/domain-reseller)",
+    "long": "## Apply for an account\nWHMCS users get exclusive access to signup with no setup fees.\n[Click here to create an account](https://www.recoverhosting.com/domain-reseller)",
     "features": [
-      "Automated Domain Registrations, Transfers & Renewals",
+      "Automated Domain Registrations, Transfers",
       "Ability to View/Change Nameservers & WHOIS Info",
       "ID Protection, EPP Code Retrieval",
       "Register/Manage Private Nameservers"
@@ -19,7 +19,8 @@
     "filename": "logo.png"
   },
   "support": {
-    "homepage": "https:\/\/www.recoverhosting.com\/"
+    "Global": "https:\/\/www.recoverhosting.com\/",
+	"India": "https:\/\/www.recoverhosting.in\/"
   },
   "authors": [
     {

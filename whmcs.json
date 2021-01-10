@@ -1,0 +1,30 @@
+{
+  "schema": "1.0",
+  "type": "whmcs-registrars",
+  "name": "RecoverHosting",
+  "license": "proprietary",
+  "category": "domains",
+  "description": {
+    "name": "RecoverHosting",
+    "tagline": "wholesale domain reseller registrar.",
+    "long": "## Apply for an account\nWHMCS users get exclusive access to signup with no setup fees.\n[Click here to create an account](https://www.recoverhosting.com/domain/domain-reseller)",
+    "features": [
+      "Automated Domain Registrations, Transfers & Renewals",
+      "Ability to View/Change Nameservers & WHOIS Info",
+      "ID Protection, EPP Code Retrieval",
+      "Register/Manage Private Nameservers"
+    ]
+  },
+  "logo": {
+    "filename": "logo.png"
+  },
+  "support": {
+    "homepage": "https:\/\/www.recoverhosting.com\/"
+  },
+  "authors": [
+    {
+      "name": "RecoverHosting",
+      "homepage": "https:\/\/www.recoverhosting.com\/"
+    }
+  ]
+}

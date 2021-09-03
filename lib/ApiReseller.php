@@ -1,26 +1,21 @@
 <?php
-namespace WHMCS\Module\Registrar\recoverhosting;
+namespace WHMCS\Module\Registrar\dotbx;
 use WHMCS\Database\Capsule;
 class ApiReseller {
     
-    const API_URL = 'https://beta.myclientserver.com/shop/v1/';
+    const API_URL = 'https://api.myclientserver.com/v1/shop/';
     
-    public static function call($action, $callmethod, $postfields){
+    public static function call($action, $postfields){
         
         $api_key    =  decrypt(ApiReseller::getauth('api-key')->value, $cc_encryption_hash);
         $reselleremail =  decrypt(ApiReseller::getauth('reseller-email')->value, $cc_encryption_hash);
         
         
-        $return = array(
-            'success'   =>  FALSE,
-            'errors'    =>  array(),
-            'messages'  =>  array(),
-            'result'    =>  array()
-            );
-            
+        $return['success'] = FALSE;
+        
         $session = curl_init();
         curl_setopt($session, CURLOPT_URL, self::API_URL . $action . '.php');
-        curl_setopt($session, CURLOPT_CUSTOMREQUEST, $callmethod);
+        curl_setopt($session, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($session, CURLOPT_POSTFIELDS, json_encode($postfields));
         curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($session, CURLOPT_SSL_VERIFYHOST, 2);
@@ -28,8 +23,8 @@ class ApiReseller {
         curl_setopt($session, CURLOPT_TIMEOUT, 100);
         curl_setopt($session, CURLOPT_HTTPHEADER, array(
             
-            'X-Auth-Key: '. $api_key .'',
-            'X-Auth-email: '. $reselleremail .''
+            'api-key: '. $api_key .'',
+            'reseller-email: '. $reselleremail .''
             
             )); 
             
@@ -55,7 +50,7 @@ class ApiReseller {
 
     public static function getauth($setting) {
         return Capsule::table('tblregistrars')
-                        ->where('registrar', '=', 'recoverhosting')
+                        ->where('registrar', '=', 'dotbx')
                         ->where('setting', '=', $setting)
                         ->select('value')
                         ->first();
@@ -70,12 +65,12 @@ class ApiReseller {
     public static function GetCustomerID ($params) {
         
         $return['success'] = FALSE;
-         $res = ApiReseller::call('customer/GetDetails','GET', array('useremail' =>$params['email']));
+         $res = ApiReseller::call('customer/GetDetails', array('useremail' => $params['email']));
         
         if($res['success']){
             
             $return['success'] = TRUE;
-            $return['customerid'] = $res['customerid'];
+            $return['userid'] = $res['userid'];
         }else{
              $return = ApiReseller::AddCustomer($params);
         }
@@ -84,23 +79,25 @@ class ApiReseller {
     }
     public static function AddCustomer($params) {
         
-        $postfields['firstname']    =   $params['firstname'];
-        $postfields['lastname']     =   $params['lastname'];
-        $postfields['companyname']  =   $params['companyname'];
-        $postfields['useremail']    =   $params['email'];
-        $postfields['address']      =   trim($params['address1'] . ' '.$params['address2']);
-        $postfields['city']         =   $params['city'];
-        $postfields['state']        =   $params['state'];
-        $postfields['fullstate']    =   $params['fullstate'];
-        $postfields['statecode']    =   $params['statecode'];
-        $postfields['postcode']     =   $params['postcode'];
-        $postfields['countrycode']  =   $params['countrycode'];
-        $postfields['countryname']  =   $params['countryname'];
-        $postfields['phonecc']      =   $params['phonecc'];
-        $postfields['phonenumber']  =   $params['phonenumber'];
-        $postfields['mobileno']     =   $params['fullphonenumber'];
+        $postfields['firstname']    =   trim($params['firstname']);               //    Required
+        $postfields['lastname']     =   $params['lastname'];                //    Required
+        $postfields['companyname']  =   $params['companyname'];             //    Required
+        $postfields['useremail']    =   $params['email'];                   //    Required
+        $postfields['address']      =   trim($params['address1'] . ' '.$params['address2']);     //    Required
+        $postfields['city']         =   trim($params['city']);                     //    Required
+        $postfields['statename']    =   $params['state'];                    //    Required
+        $postfields['postalcode']   =   $params['postcode'];                //    Required
+        $postfields['countryname']  =   $params['countryname'];             //    Required
+        $postfields['phone']        =   $params['fullphonenumber'];
         
-        return ApiReseller::call('customer/AddCustomer','POST', $postfields);
+        
+        $postfields['statename']    =   $params['fullstate'];               // Not Required
+        $postfields['statecode']    =   $params['statecode'];               // Not Required
+        $postfields['countrycode']  =   $params['countrycode'];             // Not Required
+        $postfields['phonecc']      =   $params['phonecc'];                 // Not Required
+        $postfields['phonenumber']  =   $params['phonenumber'];             // Not Required
+        
+        return ApiReseller::call('customer/AddCustomer', $postfields);
     } 
     
     public static function error($error){

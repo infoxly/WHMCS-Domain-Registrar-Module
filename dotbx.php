@@ -342,7 +342,7 @@ function dotbx_sync($params) {
             'transferredAway' => (bool) $istransferrOUT, // Return true if the domain is transferred out
         );         
      }else{
-         return array( 'error' => $res['errors'][0]['message'] );
+          return  array('error' =>  ApiReseller::error($res['errors']));
      }
 }
 
@@ -377,6 +377,6 @@ function dotbx_GetTldPricing(array $params){
             return array( 'error' => $e->getMessage() );
         }
     }else{
-         return array( 'error' => $response['errors'][0]['message'] );
+         return  array('error' =>  ApiReseller::error($response['errors']));
     }
 }

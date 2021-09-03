@@ -173,26 +173,29 @@ function dotbx_RegisterDomain($params) {
         $postfields['userid']           =   $res['userid'];
         $postfields['domainname']       =   $params['domainname'];
         $postfields['regperiod']        =   $params['regperiod'];
-        $postfields['privacy'] =   (bool) $params['idprotection'];       
+        $postfields['privacy']          =   (bool) $params['idprotection'];       
         
         if ($nameserver1) {
-            $postfields['nameserver']["ns1"] = $params['ns1'];
+            $postfields['nameserver'][] = $params['ns1'];
         }
         if ($nameserver2) {
-            $postfields['nameserver']["ns2"] = $params['ns2'];
+            $postfields['nameserver'][] = $params['ns2'];
         }
         if ($nameserver3) {
-            $postfields['nameserver']["ns3"] = $params['ns3'];
+            $postfields['nameserver'][] = $params['ns3'];
         }
         if ($nameserver4) {
-            $postfields['nameserver']["ns4"] = $params['ns4'];
+            $postfields['nameserver'][] = $params['ns4'];
         }
         if ($nameserver5) {
-            $postfields['nameserver']["ns5"] = $params['ns5'];
+            $postfields['nameserver'][] = $params['ns5'];
         }
         
          $response = ApiReseller::call('domain/register', $postfields);
-         return array('error' =>  json_encode($response));
+         
+         if(!$response['success']){
+             return  array('error' =>  ApiReseller::error($response['errors']));
+         }
          
     }else{
         return  array('error' =>  ApiReseller::error($res['errors']));
@@ -208,38 +211,12 @@ function dotbx_TransferDomain($params) {
     
     if($res['success']) {
         
-        $postfields['customerid']       =   $res['userid'];
+        $postfields['userid']           =   $res['userid'];
         $postfields['domainname']       =   $params['domainname'];
-        $postfields['regperiod']        =   $params['regperiod'];
-        $postfields['purchase-privacy'] =   ($params['idprotection'] ? "true" : "false");
-        
-        $postfields['transfersecret']  =  trim($params['transfersecret']);
-        
-        //  // submitted nameserver values
-        // $nameserver1 = $params['ns1'];
-        // $nameserver2 = $params['ns2'];
-        // $nameserver3 = $params['ns3'];
-        // $nameserver4 = $params['ns4'];
-        // $nameserver5 = $params['ns5'];
-        
-        // if ($nameserver1) {
-        //     $postfields['nameserver']["ns1"] = $params['ns1'];
-        // }
-        // if ($nameserver2) {
-        //     $postfields['nameserver']["ns2"] = $params['ns2'];
-        // }
-        // if ($nameserver3) {
-        //     $postfields['nameserver']["ns3"] = $params['ns3'];
-        // }
-        // if ($nameserver4) {
-        //     $postfields['nameserver']["ns4"] = $params['ns4'];
-        // }
-        // if ($nameserver5) {
-        //     $postfields['nameserver']["ns5"] = $params['ns5'];
-        // }
-        
-         return array('error' =>  json_encode($postfields));
-        // $response = ApiReseller::call('domain/transfer', 'POST', $postfields);
+        $postfields['privacy']          =   ($params['idprotection'] ? "true" : "false");
+        $postfields['authCode']         =   trim($params['transfersecret']);
+
+        $response = ApiReseller::call('domain/transfer', $postfields);
         
         if(!$response['success']) {
             return  array('error' =>  ApiReseller::error($response['errors']));
@@ -326,33 +303,6 @@ function dotbx_SaveNameservers($params){
         return array('error' => 'Domain is not Active.');
     }
     
-}
-
-function dotbx_SaveRegistrarLock($params){
-    
-    $domain = ApiReseller::getDomain($params['domainid']);
-    
-    if($domain->status == 'Active'){
- 
-        $postfields['isThiefProtected'] =  FALSE;
-        
-        $postfields['domainname'] = $params['domainname'];
-        if($params['lockenabled'] == 'locked'){
-            
-            $postfields['isThiefProtected'] =  true;
-        }
-        
-        $res = ApiReseller::call('domain/save/details', $postfields);
-        if(!$res['success']){
-            
-            return  array('error' =>  ApiReseller::error($res['errors']));
-             
-        } 
-    }else{
-            
-        // domain Not Active Whmcs Softwere
-        return array('error' => 'Domain is not Active.');
-    }
 }
 function dotbx_GetEPPCode($params) {
     

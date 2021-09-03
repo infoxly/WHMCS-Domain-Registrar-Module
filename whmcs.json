@@ -1,13 +1,13 @@
 {
   "schema": "1.0",
   "type": "whmcs-registrars",
-  "name": "RecoverHosting",
+  "name": "DotBX",
   "license": "proprietary",
   "category": "domains",
   "description": {
-    "name": "RecoverHosting",
+    "name": "DotBX",
     "tagline": "wholesale domain reseller registrar.",
-    "long": "## Apply for an account\nWHMCS users get exclusive access to signup with no setup fees.\n[Click here to create an account](https://www.recoverhosting.com/domain-reseller)",
+    "long": "## Apply for an account\nWHMCS users get exclusive access to signup with no setup fees.\n[Click here to create an account](https://www.dotbx.com/domain-reseller)",
     "features": [
       "Automated Domain Registrations, Transfers",
       "Ability to View/Change Nameservers & WHOIS Info",
@@ -19,13 +19,13 @@
     "filename": "logo.png"
   },
   "support": {
-    "Global": "https:\/\/www.recoverhosting.com\/",
-	"India": "https:\/\/www.recoverhosting.in\/"
+    "Global": "https:\/\/www.dotbx.com\/",
+	"India": "https:\/\/www.dotbx.in\/"
   },
   "authors": [
     {
-      "name": "RecoverHosting",
-      "homepage": "https:\/\/www.recoverhosting.com\/"
+      "name": "DotBX",
+      "homepage": "https:\/\/www.dotbx.com\/"
     }
   ]
 }

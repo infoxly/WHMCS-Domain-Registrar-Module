@@ -259,6 +259,30 @@ function dotbx_GetDomainInformation($params){
     
 }
 
+function dotbx_GetNameservers($params){
+    
+    $postfields['domainname'] = $params['domainname'];
+    
+    $res = ApiReseller::call('domain/view/details', $postfields);
+    
+    // return array('error' =>  json_encode($response));
+    
+   if($res['success']) {
+            
+           $nameservers = array();
+            $x=0;
+            foreach($res['nameServer'] as $key){
+                $x++;
+                $ns="ns".$x;
+                $nameservers["ns".$x]   = $key;
+            }          
+     
+       return $nameservers;
+      
+   }else{
+       return array( 'error' => $res['errors'][0]['message'] );
+   }
+}
 function dotbx_SaveNameservers($params){
     
     $domain = ApiReseller::getDomain($params['domainid']);
@@ -274,19 +298,19 @@ function dotbx_SaveNameservers($params){
     
         $postfields['domainname'] = $params['domainname'];
         if ($nameserver1) {
-            $postfields['nameServers'][] = $nameserver1;
+            $postfields['nameServer'][] = $nameserver1;
         }
         if ($nameserver2) {
-            $postfields['nameServers'][] = $nameserver2;
+            $postfields['nameServer'][] = $nameserver2;
         }
         if ($nameserver3) {
-            $postfields['nameServers'][] = $nameserver3;
+            $postfields['nameServer'][] = $nameserver3;
         }
         if ($nameserver4) {
-            $postfields['nameServers'][] = $nameserver4;
+            $postfields['nameServer'][] = $nameserver4;
         }
         if ($nameserver5) {
-            $postfields['nameServers'][] = $nameserver5;
+            $postfields['nameServer'][] = $nameserver5;
         }    
         
         // return  array('error' =>  json_encode($postfields));

@@ -176,19 +176,19 @@ function dotbx_RegisterDomain($params) {
         $postfields['privacy']          =   (bool) $params['idprotection'];       
         
         if ($nameserver1) {
-            $postfields['nameserver'][] = $params['ns1'];
+            $postfields['nameServer'][] = $params['ns1'];
         }
         if ($nameserver2) {
-            $postfields['nameserver'][] = $params['ns2'];
+            $postfields['nameServer'][] = $params['ns2'];
         }
         if ($nameserver3) {
-            $postfields['nameserver'][] = $params['ns3'];
+            $postfields['nameServer'][] = $params['ns3'];
         }
         if ($nameserver4) {
-            $postfields['nameserver'][] = $params['ns4'];
+            $postfields['nameServer'][] = $params['ns4'];
         }
         if ($nameserver5) {
-            $postfields['nameserver'][] = $params['ns5'];
+            $postfields['nameServer'][] = $params['ns5'];
         }
         
          $response = ApiReseller::call('domain/register', $postfields);

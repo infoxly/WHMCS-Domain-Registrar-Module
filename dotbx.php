@@ -345,6 +345,32 @@ function dotbx_GetEPPCode($params) {
     
 }
 
+function dotbx_SaveRegistrarLock($params){
+    
+    $domain = ApiReseller::getDomain($params['domainid']);
+    
+    if($domain->status == 'Active'){
+ 
+        $postfields['isThiefProtected'] =  false;
+        
+        $postfields['domainname'] = $params['domainname'];
+        if($params['lockenabled'] == 'locked'){
+            
+            $postfields['isThiefProtected'] =  true;
+        }
+        
+        $res = ApiReseller::call('domain/save/details', $postfields);
+        
+        if(!$res['success']){
+            
+            return  array('error' =>  ApiReseller::error($res['errors']));
+             
+        } 
+    }else{
+            
+        // domain Not Active Whmcs Softwere
+        return array('error' => 'Domain is not Active.');
+  
 function dotbx_sync($params) {
     
     $postfields['domainname'] = $params['domainname'];

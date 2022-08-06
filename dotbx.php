@@ -370,7 +370,8 @@ function dotbx_SaveRegistrarLock($params){
             
         // domain Not Active Whmcs Softwere
         return array('error' => 'Domain is not Active.');
-  
+    }
+} 
 function dotbx_sync($params) {
     
     $postfields['domainname'] = $params['domainname'];

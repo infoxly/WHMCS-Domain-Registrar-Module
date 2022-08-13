@@ -345,6 +345,24 @@ function dotbx_GetEPPCode($params) {
     
 }
 
+function dotbx_GetRegistrarLock($params){
+    
+    $postfields['domainname'] = $params['domainname'];
+    
+    $res = ApiReseller::call('domain/view/details', $postfields);
+    
+   if($res['success']) {
+            
+          $transferlock = 'Unlocked';
+        if($response['locked']) {
+            
+            $transferlock = 'locked';
+        }
+        return $transferlock;
+   }else{
+       return array( 'error' => $res['errors'][0]['message'] );
+   }
+}
 function dotbx_SaveRegistrarLock($params){
     
     $domain = ApiReseller::getDomain($params['domainid']);

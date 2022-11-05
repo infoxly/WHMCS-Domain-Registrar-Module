@@ -4,8 +4,8 @@ use WHMCS\Database\Capsule;
 
 class ApiReseller{
     
-    // const API_URL = 'https://api.infoxly.com/v1/shop/';
-    const API_URL = 'https://api.dotbx.shop/v1/shop/';
+     const API_URL = 'https://api.infoxly.com/v1/shop/';
+    //const API_URL = 'https://api.dotbx.shop/v1/shop/';
     
     public static function call($action, $method, $postfields){
         

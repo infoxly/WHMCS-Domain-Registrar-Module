@@ -4,7 +4,8 @@ use WHMCS\Database\Capsule;
 
 class ApiReseller{
     
-     const API_URL = 'https://api.infoxly.com/v1/shop/';
+    // const API_URL = 'https://api.infoxly.com/v1/shop/';
+    const API_URL = 'https://api.dotbx.shop/v1/shop/';
     
     public static function call($action, $method, $postfields){
         
@@ -158,7 +159,7 @@ class ApiReseller{
         
         $postfields['firstname']    =   trim($params['firstname']);               //    Required
         $postfields['lastname']     =   trim($params['lastname']);                //    Required
-        $postfields['companyname']  =   trim($params['companyname']);             //    Required
+        $postfields["companyname"]  =   isset($params['companyname']) && (!empty($params['companyname'])) && is_string($params['companyname']) ? $params['companyname'] : "N/A";             //    Required
         $postfields['useremail']    =   $params['email'];                   //    Required
         $postfields['address']      =   trim($params['address1'] . ' '.$params['address2']);     //    Required
         $postfields['city']         =   trim($params['city']);                     //    Required

@@ -426,6 +426,56 @@ function infoxly_DeleteNameserver($params){
     }
 }
 
+
+function infoxly_Sync($params){
+  $order =  ApiReseller::Getorderid($params);
+   
+  if($order['success']){
+       
+      $orderid =   $order['orderid'];
+       
+      $res = ApiReseller::call('domains/details', 'POST', array('orderid' => $orderid ));
+       
+      if($res['success'])
+      {
+           if($res["currentstatus"] == "Active"){
+               return array("active" => true, "expired" => false, "expirydate" => date('Y-m-d', strtotime( $res["expires"] ) ) );
+           }
+      }else{
+          return  array('error' =>  ApiReseller::error($order['errors']));
+      }
+  }else{
+      return  array('error' =>  ApiReseller::error($order['errors']));
+  }
+}
+function infoxly_TransferSync($params){
+  $order =  ApiReseller::Getorderid($params);
+   
+  if($order['success']){
+       
+      $orderid =   $order['orderid'];
+       
+      $res = ApiReseller::call('domains/details', 'POST', array('orderid' => $orderid ));
+       
+      if($res['success'])
+      {     
+          $currentstatus = $res["currentstatus"];
+          
+          if($currentstatus == "Inactive"){
+              return array("inprogress" => true);
+          }else
+          if($currentstatus == "Active"){
+              return array("completed" => true, "failed" => false, "expirydate" => date('Y-m-d', strtotime( $res["expires"] ) ) );
+          }else{
+              return array("failed" => true, "reason" => "contect Support" );
+          }
+      }else{
+          return  array('error' =>  ApiReseller::error($order['errors']));
+      }
+  }else{
+      return  array('error' =>  ApiReseller::error($order['errors']));
+  }
+}
 function infoxly_sync_expiry_date($params)
 {
     $domain = ApiReseller::getDomain($params['domainid']);

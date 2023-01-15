@@ -15,7 +15,7 @@ function infoxly_MetaData() {
 function infoxly_GetConfigArray()
 {
     return array(
-        "Description"   => array("Type" => "System","Value" => "INFOXLY - ICANN Accredited Domain Registrar"),
+        "Description"   => array("Type" => "System","Value" => ""),
         "auth-userid"   => array("FriendlyName" => "ResellerID:","Type" => "text","Size" => "25","Default" => "", "Description" => "Enter your ResellerID."),
         "api-key"       => array("FriendlyName" => "API Key:","Type" => "text","Size" => "25","Default" => "", "Description" => "Enter your INFOXLY API Key here.")
         );
@@ -123,7 +123,39 @@ function infoxly_TransferDomain($params) {
     }
 }
 
+function infoxly_RenewDomain($params)
+{
+    $domain = ApiReseller::getDomain($params['domainid']);
+    
+        if($domain->status == 'Active'){
+            
+          $order =  ApiReseller::Getorderid($params);
+           
+          if($order['success']){
+              
 
+            $postfields['orderid']  = $order["orderid"];
+            $postfields["years"]    = $params["regperiod"];
+            $res = ApiReseller::call('domains/renew', 'POST', $postfields);
+            
+            if(!$res['success'])
+            {
+              if(isset($res['errors'])){
+                  return  array('error' =>  ApiReseller::error($res['errors']));
+              }else{
+                  return  array('error' =>  'Nameserver update Failed.'. json_encode($res) );
+              }
+              
+            }
+          }else{
+              return  array('error' =>  ApiReseller::error($order['errors']));
+          }
+    }else{
+            // domain Not Active Whmcs Softwere
+        return array('error' => 'Domain is not Active.');
+
+    }
+}
 function infoxly_GetNameservers($params)
 {
    $order =  ApiReseller::Getorderid($params);
@@ -278,6 +310,120 @@ function infoxly_GetRegistrarLock($params)
   }else{
       return  array('error' =>  ApiReseller::error($order['errors']));
   }
+}
+
+
+function infoxly_SaveRegistrarLock($params){
+    
+    $domain = ApiReseller::getDomain($params['domainid']);
+    
+    if($domain->status == 'Active'){
+        
+        $order =  ApiReseller::Getorderid($params);
+        if($order['success']){
+            
+            $postfields['orderid'] = $order["orderid"];
+            $postfields['transferlock'] =  false;
+            
+            if($params['lockenabled'] == 'locked'){
+                
+                $postfields['transferlock'] =  true;
+            }
+            
+            $res = ApiReseller::call('domains/details', 'PUT', $postfields);
+            if(!$res['success']){
+                return  array('error' =>  ApiReseller::error($res['errors']));
+            }
+        }else{
+            return  array('error' =>  ApiReseller::error($order['errors']));
+        }
+    }else{
+            // domain Not Active Whmcs Softwere
+        return array('error' => 'Domain is not Active.');
+
+    }
+}
+
+function infoxly_RegisterNameserver($params){
+    
+    $domain = ApiReseller::getDomain($params['domainid']);
+    
+    if($domain->status == 'Active'){
+        
+        $order =  ApiReseller::Getorderid($params);
+        if($order['success']){
+            
+            $postfields["orderid"]      =   $order['orderid'];
+            $postfields["hostname"]     =   $params["nameserver"];
+            $postfields["ip"]           =   $params["ipaddress"];
+            
+            
+            $res = ApiReseller::call('domains/details', 'PATCH', $postfields);
+            if(!$res['success']){
+                return  array('error' =>  ApiReseller::error($res['errors']));
+            }else{
+                return array( "success" => "success");
+            }
+            
+        }else{
+            return  array('error' =>  ApiReseller::error($order['errors']));
+        }
+    }else{
+        return array('error' => 'Domain is not Active.');
+    }
+}
+function infoxly_ModifyNameserver($params){
+    
+    $domain = ApiReseller::getDomain($params['domainid']);
+    
+    if($domain->status == 'Active'){
+        
+        $order =  ApiReseller::Getorderid($params);
+        if($order['success']){
+            
+            $postfields["orderid"]      =   $order['orderid'];
+            $postfields["hostname"]     =   $params["nameserver"];
+            $postfields["ip"]           =   $params["newipaddress"];
+            
+            $res = ApiReseller::call('domains/details', 'PUT', $postfields);
+            if(!$res['success']){
+                return  array('error' =>  ApiReseller::error($res['errors']));
+            }else{
+                return array( "success" => "success");
+            }
+            
+        }else{
+            return  array('error' =>  ApiReseller::error($order['errors']));
+        }
+    }else{
+        return array('error' => 'Domain is not Active.');
+    }
+}
+function infoxly_DeleteNameserver($params){
+    
+    $domain = ApiReseller::getDomain($params['domainid']);
+    
+    if($domain->status == 'Active'){
+        
+        $order =  ApiReseller::Getorderid($params);
+        if($order['success']){
+            
+            $postfields["orderid"]      =   $order['orderid'];
+            $postfields["hostname"]     =   $params["nameserver"];
+            
+            $res = ApiReseller::call('domains/details', 'DELETE', $postfields);
+            if(!$res['success']){
+                return  array('error' =>  ApiReseller::error($res['errors']));
+            }else{
+                return array( "success" => "success");
+            }
+            
+        }else{
+            return  array('error' =>  ApiReseller::error($order['errors']));
+        }
+    }else{
+        return array('error' => 'Domain is not Active.');
+    }
 }
 
 function infoxly_sync_expiry_date($params)

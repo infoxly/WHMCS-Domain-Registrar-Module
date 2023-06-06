@@ -4,6 +4,8 @@ if (!defined("WHMCS")) {
 }
 use WHMCS\Module\Registrar\infoxly\ApiReseller;
 use WHMCS\Database\Capsule;
+use WHMCS\Domain\TopLevel\ImportItem;
+use WHMCS\Results\ResultsList;
 
 function infoxly_MetaData() {
     return array(
@@ -72,7 +74,6 @@ function infoxly_RegisterDomain($params){
             if(!$response['success']){
                  return  array('error' =>  ApiReseller::error($response['errors']));
             }
-            // return  array('error' =>  json_encode($response));
         }else{
             return  array('error' =>  ApiReseller::error($contect['errors']));
         }       
@@ -133,20 +134,26 @@ function infoxly_RenewDomain($params)
            
           if($order['success']){
               
+            $res = ApiReseller::call('domains/details', 'POST', array('orderid' => $order["orderid"] ));
 
-            $postfields['orderid']  = $order["orderid"];
-            $postfields["years"]    = $params["regperiod"];
-            $res = ApiReseller::call('domains/renew', 'POST', $postfields);
-            
-            if(!$res['success'])
-            {
-              if(isset($res['errors'])){
-                  return  array('error' =>  ApiReseller::error($res['errors']));
-              }else{
-                  return  array('error' =>  'Nameserver update Failed.'. json_encode($res) );
-              }
-              
+            if($res["success"]){
+
+                $postfields['orderid']  = $order["orderid"];
+                $postfields["years"]    = $params["regperiod"];
+                $postfields["currentexpiryDate"]= $res["expiryDate"];
+                $res = ApiReseller::call('domains/renew', 'POST', $postfields);
+                
+                if(!$res['success'])
+                {
+                  if(isset($res['errors'])){
+                      return  array('error' =>  ApiReseller::error($res['errors']));
+                  }
+                  
+                }
+            }else{
+                return  array('error' =>  ApiReseller::error($order['errors']));
             }
+
           }else{
               return  array('error' =>  ApiReseller::error($order['errors']));
           }
@@ -439,7 +446,7 @@ function infoxly_Sync($params){
       if($res['success'])
       {
            if($res["currentstatus"] == "Active"){
-               return array("active" => true, "expired" => false, "expirydate" => date('Y-m-d', strtotime( $res["expires"] ) ) );
+               return array("active" => true, "expired" => false, "expirydate" => date('Y-m-d', strtotime( $res["expiryDate"] ) ) );
            }
       }else{
           return  array('error' =>  ApiReseller::error($order['errors']));
@@ -465,7 +472,7 @@ function infoxly_TransferSync($params){
               return array("inprogress" => true);
           }else
           if($currentstatus == "Active"){
-              return array("completed" => true, "failed" => false, "expirydate" => date('Y-m-d', strtotime( $res["expires"] ) ) );
+              return array("completed" => true, "failed" => false, "expirydate" => date('Y-m-d', strtotime( $res["expiryDate"] ) ) );
           }else{
               return array("failed" => true, "reason" => "contect Support" );
           }
@@ -475,6 +482,46 @@ function infoxly_TransferSync($params){
   }else{
       return  array('error' =>  ApiReseller::error($order['errors']));
   }
+}
+
+function infoxly_GetTldPricing(array $params){
+    
+    $postfields = array();
+    $response = ApiReseller::call('products/reseller-cost-price', 'POST', $postfields);
+    
+    if($response['success']) {
+        
+        if($response["page_info"]["total_count"] >=1){
+            $results = new ResultsList();
+            try{
+                
+                foreach ($response['result'] as $extension) {
+                    // All the set methods can be chained and utilised together.
+    
+                    $item = (new ImportItem)
+                        ->setExtension($extension['zone'])
+                        ->setMinYears('1')
+                        ->setMaxYears('1')
+                        ->setRegisterPrice($extension['AddNewDomain'])
+                        ->setRenewPrice($extension['RenewDomain'])
+                        ->setTransferPrice($extension['AddTransferDomain'])
+                        ->setRedemptionFeeDays($extension['redemptionperiod'])
+                        ->setRedemptionFeePrice($extension['RestoreDomain'])
+                        ->setEppRequired(TRUE)
+                        ->setCurrency($extension['currencycode']);
+    
+                     $results[] = $item;                
+                }
+              return $results;
+            } catch (\Exception $e) {
+                return array( 'error' => $e->getMessage() );
+            }
+        }else{
+            return array( 'error' => "data unavailable." );
+        }
+    }else{
+         return array( 'error' => $response['errors'][0]['message'] );
+    }
 }
 function infoxly_sync_expiry_date($params)
 {
@@ -496,7 +543,7 @@ function infoxly_sync_expiry_date($params)
                   Capsule::table('tbldomains')
                         ->where('id', '=', $params['domainid'])
                         ->where('userid', '=', $params['userid'])
-                        ->update([ 'expirydate'   =>   $res['expires'] ]);
+                        ->update([ 'expirydate'   =>   $res['expiryDate'] ]);
                         
                   header("Refresh:0; url=clientsdomains.php?userid={$params['userid']}&domainid=".$params['domainid']);
                    

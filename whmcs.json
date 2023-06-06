@@ -10,9 +10,12 @@
     "long": "",
     "features": [
       "Automated Domain Registrations, Transfers",
+      "Automated Domain Renewal",
       "Ability to View/Change Nameservers & WHOIS Info",
       "ID Protection, EPP Code Retrieval",
-      "Register/Manage Private Nameservers"
+      "Register/Manage Private Nameservers",
+      "Syns Domain ExpiryDate",	    
+      "Syns Tlds Pricing"
     ]
   },
   "logo": {

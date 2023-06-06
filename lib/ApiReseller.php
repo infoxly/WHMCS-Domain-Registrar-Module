@@ -32,7 +32,11 @@ class ApiReseller{
         $response = curl_exec($session);
         
         if (curl_errno($session)) {
-            $return['errors'][] =   array('message' => 'curl error: ' . curl_errno($session) . " - " . curl_error($session));
+            $ip = infoxly_GetIP();
+            $ip2 = isset($_SERVER["SERVER_ADDR"]) ? $_SERVER["SERVER_ADDR"] : $_SERVER["LOCAL_ADDR"];
+            
+            $return['errors'][] =   array('message' => "CURL Error: " . curl_errno($session) . " - " . curl_error($session) . " (IP: " . $ip . " & " . $ip2 . ")" );
+            // $return['errors'][] =   array('message' => 'curl error: ' . curl_errno($session) . " - " . curl_error($session));
         }    
         
         curl_close($session);
@@ -80,7 +84,7 @@ class ApiReseller{
         
         if($res["success"]){
             
-            if($res["result_info"]["count"]>0){
+            if($res["page_info"]["count"]>0){
                 
                 $return['success'] = TRUE;
                 $return["contactid"] = $res["result"][0]["id"];
@@ -204,5 +208,22 @@ class ApiReseller{
           $x++;  
         }
         return $x. " Message ==> ( " . implode(", ", $return) ." )";
+    }
+    
+    function infoxly_GetIP()
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://api1.whmcs.com/ip/get");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        $contents = curl_exec($ch);
+        curl_close($ch);
+        if (!empty($contents)) {
+            $data = json_decode($contents, true);
+            if (is_array($data) && isset($data["ip"])) {
+                echo $data["ip"];
+            }
+        }
+        return "";
     }
 }

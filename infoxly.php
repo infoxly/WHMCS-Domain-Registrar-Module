@@ -52,7 +52,7 @@ function infoxly_RegisterDomain($params){
         if ($nameserver5) {
             $nameServer[] = $params['ns5'];
         } 
-        $contectType    =   "Contact";
+        $contectType    =   infoxly_ContactType($params);
         $contect = ApiReseller::searchcontact($params, $customerid, $contectType);
         
         if($contect["success"])
@@ -92,7 +92,7 @@ function infoxly_TransferDomain($params) {
     if($res['success']) {
         
         $customerid = $res['customerid'];
-        $contectType    =   "Contact";
+        $contectType    =   infoxly_ContactType($params);
         $contect = ApiReseller::searchcontact($params, $customerid, $contectType);
         
         if($contect["success"])
@@ -567,4 +567,62 @@ function infoxly_AdminCustomButtonArray() {
 	 "Sync expiry date" => "sync_expiry_date",
 	);
 	return $buttonarray;
+}
+function infoxly_ContactType($params)
+{
+    $params = injectDomainObjectIfNecessary($params);
+    if ($params["domainObj"]->getLastTLDSegment() == "uk") {
+        $contacttype = "UkContact";
+    } else {
+        if ($params["domainObj"]->getLastTLDSegment() == "eu") {
+            $contacttype = "EuContact";
+        } else {
+            if ($params["domainObj"]->getLastTLDSegment() == "cn") {
+                $contacttype = "CnContact";
+            } else {
+                if ($params["domainObj"]->getLastTLDSegment() == "co") {
+                    $contacttype = "CoContact";
+                } else {
+                    if ($params["domainObj"]->getLastTLDSegment() == "ca") {
+                        $contacttype = "CaContact";
+                    } else {
+                        if ($params["domainObj"]->getLastTLDSegment() == "es") {
+                            $contacttype = "EsContact";
+                        } else {
+                            if ($params["domainObj"]->getLastTLDSegment() == "de") {
+                                $contacttype = "DeContact";
+                            } else {
+                                if ($params["domainObj"]->getLastTLDSegment() == "ru") {
+                                    $contacttype = "RuContact";
+                                } else {
+                                    if ($params["domainObj"]->getLastTLDSegment() == "nl") {
+                                        $contacttype = "NlContact";
+                                    } else {
+                                        if ($params["domainObj"]->getLastTLDSegment() == "mx") {
+                                            $contacttype = "MxContact";
+                                        } else {
+                                            if ($params["domainObj"]->getLastTLDSegment() == "br") {
+                                                $contacttype = "BrContact";
+                                            } else {
+                                                if ($params["domainObj"]->getLastTLDSegment() == "nyc") {
+                                                    $contacttype = "NycContact";
+                                                } else {
+                                                    if ($params["domainObj"]->getLastTLDSegment() == "tel") {
+                                                        $contacttype = "Contact";
+                                                    } else {
+                                                        $contacttype = "Contact";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $contacttype;
 }

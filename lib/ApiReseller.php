@@ -101,7 +101,7 @@ class ApiReseller{
         $return['success'] = FALSE;
         
         $postfields["customerid"]   =   $customerid;
-        
+        $postfields["contectType"]  =   $contectType;
         $postfields["firstname"]    =   trim( $params["firstname"] );
         $postfields["lastname"]     =   trim( $params["lastname"] );
         $postfields["companyname"]  =   isset($params['companyname']) && (!empty($params['companyname'])) && is_string($params['companyname']) ? $params['companyname'] : "N/A";
